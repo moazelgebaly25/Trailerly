@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Minimal theme definition since the app uses Jetpack Compose with Material 3,
+         which handles theming through the Compose theme system defined in ui/theme/Theme.kt.
+         The NoActionBar parent is necessary because Compose apps manage their own app bars. -->
+    <style name="Theme.Trailerly" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

@@ -44,6 +44,7 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import android.app.Activity
+import com.trailerly.auth.AuthState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -335,19 +336,24 @@ fun SignInScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Guest mode button
-            TextButton(
-                onClick = {
-                    scope.launch {
-                        viewModel.signInAnonymously()
-                    }
-                },
-                enabled = !isLoading
-            ) {
-                Text(
-                    text = stringResource(R.string.continue_as_guest),
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            // Guest mode button - only show if user is not already a guest
+            val authState by viewModel.authState.collectAsState()
+            val isGuest = authState is AuthState.Authenticated && (authState as AuthState.Authenticated).isAnonymous
+            
+            if (!isGuest) {
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            viewModel.signInAnonymously()
+                        }
+                    },
+                    enabled = !isLoading
+                ) {
+                    Text(
+                        text = stringResource(R.string.continue_as_guest),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
 
             // Error message

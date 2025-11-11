@@ -59,12 +59,9 @@ fun TrailerlyNavigation(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // Handle successful sign-in
                 Timber.d("Google Sign-In successful")
-                // authViewModel._authResult.value = AuthResult.Success("Google Sign-In successful")
             } else {
                 Timber.e("Google Sign-In failed with result code: ${result.resultCode}")
-                // authViewModel._authResult.value = AuthResult.Error("Google Sign-In failed")
             }
         }
     )
@@ -84,7 +81,9 @@ fun TrailerlyNavigation(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                if (navController.currentDestination?.route != "home") {
+                val isAnonymous = (authState as AuthState.Authenticated).isAnonymous
+                // Only navigate to home if not anonymous (guest users can navigate freely)
+                if (!isAnonymous && navController.currentDestination?.route != "home") {
                     navController.navigate("home") {
                         popUpTo("signin") { inclusive = true }
                     }
@@ -154,7 +153,12 @@ fun TrailerlyNavigation(
                 movieId = movieId,
                 viewModel = movieViewModel,
                 onBackClick = { navController.popBackStack() },
-                isGuest = isGuest
+                isGuest = isGuest,
+                onNavigateToSignIn = {
+                    navController.navigate("signin") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                }
             )
         }
 

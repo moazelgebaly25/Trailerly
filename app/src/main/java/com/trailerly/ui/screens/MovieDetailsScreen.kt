@@ -66,7 +66,8 @@ fun MovieDetailsScreen(
     viewModel: MovieViewModel,
     onBackClick: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel(),
-    isGuest: Boolean = false
+    isGuest: Boolean = false,
+    onNavigateToSignIn: () -> Unit = {}
 ) {
     val movieDetailsState by viewModel.movieDetails.collectAsState()
     val savedMovieIds by viewModel.savedMovieIds.collectAsState()
@@ -173,22 +174,22 @@ fun MovieDetailsScreen(
                     }
 
                                     // Inline Trailer Section
-                    if (showInlineTrailer && safeVideoKey != null) {
-                        item {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp)
-                            ) {
-                                YouTubePlayerComposable(
-                                    videoId = safeVideoKey,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(16f / 9f) // Standard YouTube aspect ratio
-                                )
-                            }
-                        }
-                    }
+                                    if (showInlineTrailer && safeVideoKey != null && safeVideoKey != "youtube_search") {
+                                        item {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 16.dp)
+                                            ) {
+                                                YouTubePlayerComposable(
+                                                    videoId = safeVideoKey,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .aspectRatio(16f / 9f) // Standard YouTube aspect ratio
+                                                )
+                                            }
+                                        }
+                                    }
 
                     // Movie Info
                     item {
@@ -301,7 +302,7 @@ fun MovieDetailsScreen(
                                     GuestModeDialog(
                                         onSignInClick = {
                                             showGuestDialog = false
-                                            // Navigate to sign in screen
+                                            onNavigateToSignIn()
                                         },
                                         onDismiss = { showGuestDialog = false }
                                     )
@@ -353,7 +354,7 @@ fun MovieDetailsScreen(
                                     }
 
                                     is UiState.Success -> {
-                                        if (safeVideoKey != null) {
+                                        if (safeVideoKey != null && safeVideoKey != "youtube_search") {
                                             OutlinedButton(
                                                 onClick = {
                                                     showInlineTrailer = !showInlineTrailer
@@ -375,24 +376,15 @@ fun MovieDetailsScreen(
 
                                             OutlinedButton(
                                                 onClick = {
-                                                    val trailerUrl =
-                                                        YouTubeHelper.buildYouTubeUrl(safeVideoKey)
-                                                    val shareIntent =
-                                                        Intent(Intent.ACTION_SEND).apply {
-                                                            type = "text/plain"
-                                                            putExtra(
-                                                                Intent.EXTRA_TEXT,
-                                                                "Check out the trailer for ${
-                                                                    viewModel.getDisplayTitle(movie)
-                                                                }: $trailerUrl"
-                                                            )
-                                                        }
-                                                    context.startActivity(
-                                                        Intent.createChooser(
-                                                            shareIntent,
-                                                            "Share Trailer"
+                                                    val trailerUrl = YouTubeHelper.buildYouTubeUrl(safeVideoKey)
+                                                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                                        type = "text/plain"
+                                                        putExtra(
+                                                            Intent.EXTRA_TEXT,
+                                                            "Check out the trailer for ${viewModel.getDisplayTitle(movie)}: $trailerUrl"
                                                         )
-                                                    )
+                                                    }
+                                                    context.startActivity(Intent.createChooser(shareIntent, "Share Trailer"))
                                                 },
                                                 modifier = Modifier
                                                     .weight(1f)
@@ -665,4 +657,5 @@ fun MovieDetailsScreen(
                 }
             }
         }
-    }}
+    }
+}

@@ -51,7 +51,8 @@ fun MovieCard(
             }
         },
         modifier = modifier
-            .width(128.dp),
+            .width(128.dp)
+            .height(220.dp), // Fixed height to ensure consistent row height
         shape = RoundedCornerShape(8.dp),
     ) {
         Column {
@@ -75,7 +76,7 @@ fun MovieCard(
                     color = Color.Black.copy(alpha = 0.8f),
                     shape = RoundedCornerShape(4.dp)
                 ) {
-                Row(
+                    Row(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically

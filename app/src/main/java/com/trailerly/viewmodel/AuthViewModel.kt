@@ -136,6 +136,13 @@ class AuthViewModel @Inject constructor(
         _authResult.value = AuthResult.Loading
         viewModelScope.launch {
             try {
+                // If user is currently anonymous (guest), sign out first
+                val currentUser = authRepository.getCurrentUser()
+                if (currentUser?.isAnonymous == true) {
+                    FirebaseCrashlytics.getInstance().log("Signing out anonymous user before email sign in")
+                    authRepository.signOut()
+                }
+
                 val result = authRepository.signInWithEmail(email, password)
                 _authResult.value = result
             } catch (e: Exception) {
@@ -166,6 +173,13 @@ class AuthViewModel @Inject constructor(
         _authResult.value = AuthResult.Loading
         viewModelScope.launch {
             try {
+                // If user is currently anonymous (guest), sign out first
+                val currentUser = authRepository.getCurrentUser()
+                if (currentUser?.isAnonymous == true) {
+                    FirebaseCrashlytics.getInstance().log("Signing out anonymous user before email sign up")
+                    authRepository.signOut()
+                }
+
                 val result = authRepository.signUpWithEmail(email, password)
                 _authResult.value = result
             } catch (e: Exception) {
@@ -212,6 +226,13 @@ class AuthViewModel @Inject constructor(
         _authResult.value = AuthResult.Loading
         viewModelScope.launch {
             try {
+                // If user is currently anonymous (guest), sign out first
+                val currentUser = authRepository.getCurrentUser()
+                if (currentUser?.isAnonymous == true) {
+                    FirebaseCrashlytics.getInstance().log("Signing out anonymous user before Google sign in")
+                    authRepository.signOut()
+                }
+
                 val result = authRepository.signInWithGoogle(idToken)
                 _authResult.value = result
             } catch (e: Exception) {

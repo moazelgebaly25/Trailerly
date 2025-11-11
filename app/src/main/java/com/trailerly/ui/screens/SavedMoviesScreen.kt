@@ -82,7 +82,7 @@ fun SavedMoviesScreen(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.Top
                     ) {
                     Icon(
                         imageVector = Icons.Filled.Bookmark,
@@ -91,15 +91,19 @@ fun SavedMoviesScreen(
                         tint = MaterialTheme.colorScheme.outlineVariant
                     )
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Text(
                         text = if (isGuest) "Sign in to save movies" else "No saved movies yet",
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
                         text = if (isGuest)
-                            "Create an account to save your favorite movies and access them anywhere"
+                            ""
                         else
                             "Save your favorite movies to watch them later",
                         style = MaterialTheme.typography.bodyMedium,
@@ -108,7 +112,7 @@ fun SavedMoviesScreen(
                     )
 
                     if (isGuest) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
                         Button(
                             onClick = { onNavigateToSignIn() },
                             shape = RoundedCornerShape(8.dp)

@@ -191,6 +191,27 @@ object YouTubeHelper {
                 } else {
                     Timber.d("No suitable YouTube video found after filtering for query: '%s', trying next query", searchQuery)
                 }
+            } catch (e: retrofit2.HttpException) {
+                if (e.code() == 403) {
+                    Timber.w("YouTube API quota exceeded for query '%s', falling back to search link", searchQuery)
+                    // Return a synthetic VideoDto for search fallback
+                    return VideoDto(
+                        id = "youtube_search_fallback",
+                        key = "youtube_search",
+                        name = searchQuery,
+                        site = "YouTube",
+                        type = "Trailer",
+                        size = 1080,
+                        official = false,
+                        publishedAt = null,
+                        iso6391 = null,
+                        iso31661 = null,
+                        thumbnail = null
+                    )
+                } else {
+                    Timber.w(e, "YouTube search failed for query '%s': %s", searchQuery, e.message)
+                    // Continue to next query instead of failing completely
+                }
             } catch (e: Exception) {
                 Timber.w(e, "YouTube search failed for query '%s': %s", searchQuery, e.message)
                 // Continue to next query instead of failing completely
@@ -217,5 +238,14 @@ object YouTubeHelper {
      */
     fun buildYouTubeUrl(videoKey: String): String {
         return "https://www.youtube.com/watch?v=$videoKey"
+    }
+
+    /**
+     * Builds a YouTube search URL from a query string.
+     * @param query The search query
+     * @return YouTube search URL
+     */
+    fun buildYouTubeSearchUrl(query: String): String {
+        return "https://www.youtube.com/results?search_query=${java.net.URLEncoder.encode(query, "UTF-8")}"
     }
 }
